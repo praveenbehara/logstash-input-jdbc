@@ -41,6 +41,33 @@ require "yaml" # persistence
 # the pipeline starts up, this value will be updated by reading from the file. If
 # `clean_run` is set to true, this value will be ignored and `sql_last_value` will be
 # set to Jan 1, 1970, or 0 if `use_column_value` is true, as if no query has ever been executed.
+# Let's assume there my_table having id (auto incremented), col1, col2, datecreated (auto generated) columns
+# Eg 1: Assume we want to use the value of id column. To ensure no repeating records, the configuration would look like
+# [source,ruby]
+# ------------------------------------------------------------------------------
+# jdbc {
+# ...
+# use_column_value => true
+# tracking_column => "id"
+# record_last_run => true
+# statement => "select col1, col2 from my_table where id > :sql_last_value"
+# ...
+# }
+# ------------------------------------------------------------------------------
+# 
+# Eg 2 : Assume we have a datecreated column. 
+# Care should be taken to ensure that this datetime field has even the timezone info
+# [source,ruby]
+# ------------------------------------------------------------------------------
+# jdbc {
+# ...
+# use_column_value => false
+# tracking_column => "datecreated"
+# record_last_run => true
+# statement => "select col1, col2 from my_table where datecreated > :sql_last_value"
+# ...
+# }
+# ------------------------------------------------------------------------------
 #
 # ==== Dealing With Large Result-sets
 #
